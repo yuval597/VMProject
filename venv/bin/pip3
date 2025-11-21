@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/home/yuval/VM Project/venv/bin/python3" "$0" "$@"
-' '''
+#!/home/yuval/infra-automation/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

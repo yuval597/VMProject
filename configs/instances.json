@@ -1,8 +1,1 @@
-[
-    {
-        "name": "myvm",
-        "os": "ubuntu",
-        "cpu": 8,
-        "ram": 12
-    }
-]
+[]

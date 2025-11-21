@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ValidationError, field_validator
 import json
+from src.machine import Machine
 
 class MachineModel(BaseModel):
     name: str
@@ -29,13 +30,20 @@ def prompt_for_machine ():
     cpu = input("Enter required CPU here: ")
     ram = input("Enter required RAM here: ")
     try:
-        machine = MachineModel(
+        validated = MachineModel(
         name=name,
         os=os,
         cpu=cpu,
         ram=ram
         )
-        return machine.model_dump()
+        machine = Machine(
+            name=validated.name,
+            os=validated.os,
+            cpu=validated.cpu,
+            ram=validated.ram
+        )
+        return machine
+
     except ValidationError as e:
         print("Invalid input:", e)
         return None
@@ -44,14 +52,15 @@ def prompt_for_machine ():
 def main():
     machines = []
     while True:
-        add_machine = input("Add another machine? (y/n): ").lower()
+        add_machine = input("Add new machine? (y/n): ").lower()
         if add_machine == "n":
             break
-        machine_data = prompt_for_machine()
-        if machine_data:
-            machines.append(machine_data)
+        machine = prompt_for_machine()
+        if machine:
+            machines.append(machine)
+    machines_data = [m.to_dict() for m in machines]
     with open("configs/instances.json", "w") as f:
-        json.dump(machines, f, indent=4)
+        json.dump(machines_data, f, indent=4)
 
 if __name__ == "__main__":
     main()
