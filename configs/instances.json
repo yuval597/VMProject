@@ -1,13 +1,13 @@
 [
     {
-        "name": "ubu",
-        "os": "ubuntu",
+        "name": "cent",
+        "os": "centos",
         "cpu": 8,
         "ram": 16
     },
     {
-        "name": "cent",
-        "os": "centos",
+        "name": "ubu",
+        "os": "ubuntu",
         "cpu": 8,
         "ram": 16
     }

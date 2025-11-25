@@ -7,7 +7,7 @@ SERVICE="nginx"
 
 set -e
 
-echo "Checking if $SERVICE is installed.."
+echo "Checking if $SERVICE is installed.." >> $LOG_FILE
 if ! command -v nginx >/dev/null 2>&1; then
     echo "$SERVICE not found. installing.." >> $LOG_FILE
     sudo apt update

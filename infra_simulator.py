@@ -61,6 +61,7 @@ def prompt_for_machine ():
     
 
 def install_service():
+    logger.info("Starting NGINX install script (scripts/install_nginx.sh)")
     try:
         result = subprocess.run(
             ["bash", "scripts/install_nginx.sh"],
@@ -68,13 +69,21 @@ def install_service():
             capture_output=True,
             text=True,
         )
+        logger.info("NGINX install script finished successfully")
         print("Service installing script finished successfully")
-        print(result.stdout)
+        if result.stdout:
+            logger.info("NGINX script stdout:\n%s", result.stdout.strip())
+        if result.stderr:
+            logger.warning("NGINX script stderr:\n%s", result.stderr.strip())
+        
     except subprocess.CalledProcessError as e:
-        print("Service installing script failed!")
-        print("Exit code", e.returncode)
-        print("strerr", e.stderr)
-
+        logger.error("NGINX install script failed with exit code %d", e.returncode)
+        print("Service installation script failed!")
+        if e.stdout:
+            logger.error("NGINX script stdout on error:\n%s", e.stdout.strip())
+        if e.stderr:
+            logger.error("NGINX script stderr on error:\n%s", e.stderr.strip())
+        
 def main():
     logger.info("Provisioning started")
     machines = []
@@ -88,7 +97,7 @@ def main():
             print(f"{machine_data['name']} added successfully")
     with open("configs/instances.json", "w") as f:
         json.dump(machines, f, indent=4)
-        logger.info("Provisioning finished, saved %d machines", len(machines))
+        logger.info("Saved %d machines to configs/instances.json", len(machines))
     install_service()
 
 if __name__ == "__main__":
