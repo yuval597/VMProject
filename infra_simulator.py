@@ -7,9 +7,9 @@
 # 5. runs a bash script to install nginx
 # 6. writes logs to logs/provisioning.log
 
-from pydantic import BaseModel, ValidationError, field_validator
+from pydantic import ValidationError
 import json
-from src.machine import Machine
+from src.machine import Machine, MachineModel
 import subprocess
 import logging
 
@@ -22,30 +22,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# MachineModel - validates raw user input for machine details before creating a Machine object
-# It makes sure the name is valid, CPU/RAM are numbers, OS is allowed, etc
-class MachineModel(BaseModel):
-    name: str
-    os: str
-    cpu: int
-    ram: int
-
-# Validate name field: must contain letters, not only numbers
-    @field_validator("name")
-    def validate_name(cls, v):
-        if not v.strip():
-            raise ValueError("Name cannot be empty")
-        if v.isdigit():
-            raise ValueError("Name cannot be numeric")
-        return v
-    @field_validator("os")
-    def validate_os(cls, v):
-        if not v.strip():
-            raise ValueError("OS cannot be empty")
-        if v.isdigit():
-            raise ValueError("OS cannot be numeric")
-        return v
-
 # Ask the user to enter machine details (name, OS, CPU, RAM)
 # Uses MachineModel to validate the input
 # Returns a Machine object if valid, or None if invalid
@@ -55,23 +31,18 @@ def prompt_for_machine ():
     cpu = input("Enter required CPU here: ")
     ram = input("Enter required RAM here: ")
     try:
-        validated = MachineModel(
+        machine = MachineModel(
         name=name,
         os=os,
         cpu=cpu,
         ram=ram
         )
-        machine = Machine(
-            name=validated.name,
-            os=validated.os,
-            cpu=validated.cpu,
-            ram=validated.ram
-        )
-        return validated.model_dump()
-
+        
     except ValidationError as e:
         logger.error("Invalid input: %s", e)
         return None
+    
+    return machine.model_dump()
     
 # Runs the install_nginx.sh bash script
 # Uses subprocess to execute the script
@@ -108,12 +79,16 @@ def main():
     # Loops: ask user if they want to add another machine
     while True:
         add_machine = input("Add new machine? (y/n): ").lower()
+        if add_machine not in ("y" , "n"):
+            print("Please enter 'y' or 'n' only") 
+            continue
         if add_machine == "n":
-            break
+            break 
         machine_data = prompt_for_machine()
         if machine_data:
             machines.append(machine_data)
             print(f"{machine_data['name']} added successfully")
+
     # Save all machines into configs/instances.json as a list of dictionaries
     with open("configs/instances.json", "w") as f:
         json.dump(machines, f, indent=4)
