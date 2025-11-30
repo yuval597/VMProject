@@ -12,18 +12,16 @@ SERVICE="nginx"
 
 set -e
 
-echo "Checking if $SERVICE is installed.." >> $LOG_FILE
+echo "Checking if $SERVICE is installed.." >> "$LOG_FILE"
 
 # If nginx exists skip installation
 if command -v nginx >/dev/null 2>&1; then
-    echo "$SERVICE already installed! Skipping installation" >> $LOG_FILE
+    echo "$SERVICE already installed! Skipping installation" >> "$LOG_FILE"
     exit 0
-    fi
+fi
 
 # If nginx does NOT exist install it.
-echo "$SERVICE not found. installing.." >> $LOG_FILE
-    sudo apt update
-    sudo apt install -y nginx
-    echo "$SERVICE installed successfully!" >> $LOG_FILE
-
-
+echo "$SERVICE not found. installing.." >> "$LOG_FILE"
+    sudo apt update >> "$LOG_FILE" 2>&1
+    sudo apt install -y nginx >> "$LOG_FILE" 2>&1
+    echo "$SERVICE installed successfully!" >> "$LOG_FILE"
