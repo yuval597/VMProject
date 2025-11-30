@@ -22,6 +22,6 @@ fi
 
 # If nginx does NOT exist install it.
 echo "$SERVICE not found. installing.." >> "$LOG_FILE"
-    sudo apt update >> "$LOG_FILE" 2>&1
-    sudo apt install -y nginx >> "$LOG_FILE" 2>&1
-    echo "$SERVICE installed successfully!" >> "$LOG_FILE"
+sudo apt update >> "$LOG_FILE" 2>&1
+sudo apt install -y nginx >> "$LOG_FILE" 2>&1
+echo "$SERVICE installed successfully!" >> "$LOG_FILE"
